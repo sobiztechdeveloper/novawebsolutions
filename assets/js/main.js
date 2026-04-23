@@ -13,56 +13,14 @@ document.addEventListener("DOMContentLoaded", function () {
   const mobileLinks = document.querySelectorAll(".mobile-link");
 
   const contactForm = document.getElementById("contact-form");
-  const formNextUrl = document.getElementById("form-next-url");
+  const formSuccess = document.getElementById("form-success");
   const formError = document.getElementById("form-error");
-  const successPopup = document.getElementById("success-popup");
-  const successPopupClose = document.getElementById("success-popup-close");
 
   const requiredFields = [
     { input: document.getElementById("name"), error: document.getElementById("name-error") },
     { input: document.getElementById("email"), error: document.getElementById("email-error") },
     { input: document.getElementById("message"), error: document.getElementById("message-error") }
   ];
-
-  function showSuccessPopup() {
-    if (!successPopup) {
-      return;
-    }
-    successPopup.classList.remove("hidden");
-    successPopup.classList.add("flex");
-  }
-
-  function closeSuccessPopup() {
-    if (!successPopup) {
-      return;
-    }
-    successPopup.classList.add("hidden");
-    successPopup.classList.remove("flex");
-  }
-
-  if (successPopupClose) {
-    successPopupClose.addEventListener("click", closeSuccessPopup);
-  }
-
-  if (successPopup) {
-    successPopup.addEventListener("click", function (event) {
-      if (event.target === successPopup) {
-        closeSuccessPopup();
-      }
-    });
-  }
-
-  const params = new URLSearchParams(window.location.search);
-  if (params.get("submitted") === "1") {
-    showSuccessPopup();
-    params.delete("submitted");
-    const cleanQuery = params.toString();
-    const newUrl =
-      window.location.pathname +
-      (cleanQuery ? "?" + cleanQuery : "") +
-      window.location.hash;
-    window.history.replaceState({}, "", newUrl);
-  }
 
   function closeMenu() {
     if (!mobileMenu || !mobileMenuOverlay || !menuBtn) {
@@ -144,29 +102,56 @@ document.addEventListener("DOMContentLoaded", function () {
       });
 
       if (!isValid) {
+        if (formSuccess) {
+          formSuccess.classList.add("hidden");
+        }
         if (formError) {
           formError.classList.add("hidden");
         }
         return;
       }
 
-      if (window.location.protocol === "file:") {
-        if (formError) {
-          formError.textContent = "FormSubmit does not work from file:/// preview. Please upload to Hostinger or run a local web server (for example: python -m http.server) and try again.";
-          formError.classList.remove("hidden");
-        }
-        return;
-      }
+      const formData = new FormData();
+      formData.append("name", document.getElementById("name") ? document.getElementById("name").value.trim() : "");
+      formData.append("email", document.getElementById("email") ? document.getElementById("email").value.trim() : "");
+      formData.append("message", document.getElementById("message") ? document.getElementById("message").value.trim() : "");
+      fetch("contact.php", {
+        method: "POST",
+        headers: {
+          "Accept": "application/json"
+        },
+        body: formData
+      })
+        .then(function (response) {
+          return response.json();
+        })
+        .then(function (data) {
+          if (data && (data.success === true || data.success === "true")) {
+            if (formSuccess) {
+              formSuccess.classList.remove("hidden");
+            }
+            if (formError) {
+              formError.classList.add("hidden");
+            }
+            contactForm.reset();
+            return;
+          }
 
-      if (formNextUrl) {
-        formNextUrl.value = window.location.origin + window.location.pathname + "?submitted=1#contact";
-      }
-
-      if (formError) {
-        formError.classList.add("hidden");
-      }
-
-      contactForm.submit();
+          if (formSuccess) {
+            formSuccess.classList.add("hidden");
+          }
+          if (formError) {
+            formError.classList.remove("hidden");
+          }
+        })
+        .catch(function () {
+          if (formSuccess) {
+            formSuccess.classList.add("hidden");
+          }
+          if (formError) {
+            formError.classList.remove("hidden");
+          }
+        });
     });
   }
 });
