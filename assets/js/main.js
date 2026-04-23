@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const mobileLinks = document.querySelectorAll(".mobile-link");
 
   const contactForm = document.getElementById("contact-form");
-  const formSuccess = document.getElementById("form-success");
+  const formNextUrl = document.getElementById("form-next-url");
   const formError = document.getElementById("form-error");
 
   const requiredFields = [
@@ -102,62 +102,29 @@ document.addEventListener("DOMContentLoaded", function () {
       });
 
       if (!isValid) {
-        if (formSuccess) {
-          formSuccess.classList.add("hidden");
-        }
         if (formError) {
           formError.classList.add("hidden");
         }
         return;
       }
 
-      const payload = {
-        name: document.getElementById("name") ? document.getElementById("name").value.trim() : "",
-        email: document.getElementById("email") ? document.getElementById("email").value.trim() : "",
-        message: document.getElementById("message") ? document.getElementById("message").value.trim() : "",
-        _subject: "New consultation request - Nova Web Solutions",
-        _captcha: "false",
-        _template: "table"
-      };
+      if (window.location.protocol === "file:") {
+        if (formError) {
+          formError.textContent = "FormSubmit does not work from file:/// preview. Please upload to Hostinger or run a local web server (for example: python -m http.server) and try again.";
+          formError.classList.remove("hidden");
+        }
+        return;
+      }
 
-      fetch("https://formsubmit.co/ajax/kadampan@nova-websolutions.com", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Accept": "application/json"
-        },
-        body: JSON.stringify(payload)
-      })
-        .then(function (response) {
-          return response.json();
-        })
-        .then(function (data) {
-          if (data && data.success === "true") {
-            if (formSuccess) {
-              formSuccess.classList.remove("hidden");
-            }
-            if (formError) {
-              formError.classList.add("hidden");
-            }
-            contactForm.reset();
-            return;
-          }
+      if (formNextUrl) {
+        formNextUrl.value = window.location.origin + window.location.pathname + "#contact";
+      }
 
-          if (formSuccess) {
-            formSuccess.classList.add("hidden");
-          }
-          if (formError) {
-            formError.classList.remove("hidden");
-          }
-        })
-        .catch(function () {
-          if (formSuccess) {
-            formSuccess.classList.add("hidden");
-          }
-          if (formError) {
-            formError.classList.remove("hidden");
-          }
-        });
+      if (formError) {
+        formError.classList.add("hidden");
+      }
+
+      contactForm.submit();
     });
   }
 });
