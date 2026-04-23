@@ -14,6 +14,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   const contactForm = document.getElementById("contact-form");
   const formSuccess = document.getElementById("form-success");
+  const formError = document.getElementById("form-error");
 
   const requiredFields = [
     { input: document.getElementById("name"), error: document.getElementById("name-error") },
@@ -104,13 +105,59 @@ document.addEventListener("DOMContentLoaded", function () {
         if (formSuccess) {
           formSuccess.classList.add("hidden");
         }
+        if (formError) {
+          formError.classList.add("hidden");
+        }
         return;
       }
 
-      if (formSuccess) {
-        formSuccess.classList.remove("hidden");
-      }
-      contactForm.reset();
+      const payload = {
+        name: document.getElementById("name") ? document.getElementById("name").value.trim() : "",
+        email: document.getElementById("email") ? document.getElementById("email").value.trim() : "",
+        message: document.getElementById("message") ? document.getElementById("message").value.trim() : "",
+        _subject: "New consultation request - Nova Web Solutions",
+        _captcha: "false",
+        _template: "table"
+      };
+
+      fetch("https://formsubmit.co/ajax/info@nova-websolutions.com", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
+        body: JSON.stringify(payload)
+      })
+        .then(function (response) {
+          return response.json();
+        })
+        .then(function (data) {
+          if (data && data.success === "true") {
+            if (formSuccess) {
+              formSuccess.classList.remove("hidden");
+            }
+            if (formError) {
+              formError.classList.add("hidden");
+            }
+            contactForm.reset();
+            return;
+          }
+
+          if (formSuccess) {
+            formSuccess.classList.add("hidden");
+          }
+          if (formError) {
+            formError.classList.remove("hidden");
+          }
+        })
+        .catch(function () {
+          if (formSuccess) {
+            formSuccess.classList.add("hidden");
+          }
+          if (formError) {
+            formError.classList.remove("hidden");
+          }
+        });
     });
   }
 });
