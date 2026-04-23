@@ -434,7 +434,7 @@
               <input type="hidden" name="_subject" value="New consultation request - Nova Web Solutions" />
               <input type="hidden" name="_captcha" value="false" />
               <input type="hidden" name="_template" value="table" />
-              <input type="hidden" id="form-next-url" name="_next" value="https://www.nova-websolutions.com/#contact" />
+              <input type="hidden" id="form-next-url" name="_next" value="https://www.nova-websolutions.com/?submitted=1#contact" />
               <div>
                 <label for="name" class="mb-2 block text-sm font-medium text-slate-200">Full Name</label>
                 <input id="name" name="name" type="text" required placeholder="Your name" class="w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none transition placeholder:text-slate-500 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" />
@@ -509,6 +509,23 @@
     <div class="mx-auto grid max-w-md grid-cols-2 gap-2">
       <a aria-label="Chat on WhatsApp" href="https://wa.me/94750326729?text=Hi%20Nova%20Web%20Solutions,%20I%20need%20a%20website%20or%20software%20solution." target="_blank" rel="noopener noreferrer" class="btn-shine inline-flex items-center justify-center rounded-xl bg-green-500 px-4 py-3 text-sm font-semibold text-white transition hover:bg-green-600">WhatsApp</a>
       <a aria-label="Get quote via contact form" href="#contact" class="btn-shine inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 px-4 py-3 text-sm font-semibold text-white shadow-soft">Get Quote</a>
+    </div>
+  </div>
+
+  <div id="success-popup" class="fixed inset-0 z-[70] hidden items-center justify-center bg-slate-950/70 p-4 backdrop-blur-sm">
+    <div class="w-full max-w-md rounded-2xl border border-emerald-500/30 bg-slate-900 p-6 shadow-deep">
+      <div class="flex items-start gap-3">
+        <span class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-300">✓</span>
+        <div>
+          <h3 class="text-lg font-semibold text-white">Message Sent Successfully</h3>
+          <p class="mt-1 text-sm text-slate-300">Thank you! We received your request and will contact you within 24 hours.</p>
+        </div>
+      </div>
+      <div class="mt-5 flex justify-end">
+        <button id="success-popup-close" type="button" class="rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 px-4 py-2 text-sm font-semibold text-white transition hover:brightness-110">
+          OK
+        </button>
+      </div>
     </div>
   </div>
 

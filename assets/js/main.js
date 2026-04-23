@@ -15,12 +15,54 @@ document.addEventListener("DOMContentLoaded", function () {
   const contactForm = document.getElementById("contact-form");
   const formNextUrl = document.getElementById("form-next-url");
   const formError = document.getElementById("form-error");
+  const successPopup = document.getElementById("success-popup");
+  const successPopupClose = document.getElementById("success-popup-close");
 
   const requiredFields = [
     { input: document.getElementById("name"), error: document.getElementById("name-error") },
     { input: document.getElementById("email"), error: document.getElementById("email-error") },
     { input: document.getElementById("message"), error: document.getElementById("message-error") }
   ];
+
+  function showSuccessPopup() {
+    if (!successPopup) {
+      return;
+    }
+    successPopup.classList.remove("hidden");
+    successPopup.classList.add("flex");
+  }
+
+  function closeSuccessPopup() {
+    if (!successPopup) {
+      return;
+    }
+    successPopup.classList.add("hidden");
+    successPopup.classList.remove("flex");
+  }
+
+  if (successPopupClose) {
+    successPopupClose.addEventListener("click", closeSuccessPopup);
+  }
+
+  if (successPopup) {
+    successPopup.addEventListener("click", function (event) {
+      if (event.target === successPopup) {
+        closeSuccessPopup();
+      }
+    });
+  }
+
+  const params = new URLSearchParams(window.location.search);
+  if (params.get("submitted") === "1") {
+    showSuccessPopup();
+    params.delete("submitted");
+    const cleanQuery = params.toString();
+    const newUrl =
+      window.location.pathname +
+      (cleanQuery ? "?" + cleanQuery : "") +
+      window.location.hash;
+    window.history.replaceState({}, "", newUrl);
+  }
 
   function closeMenu() {
     if (!mobileMenu || !mobileMenuOverlay || !menuBtn) {
@@ -117,7 +159,7 @@ document.addEventListener("DOMContentLoaded", function () {
       }
 
       if (formNextUrl) {
-        formNextUrl.value = window.location.origin + window.location.pathname + "#contact";
+        formNextUrl.value = window.location.origin + window.location.pathname + "?submitted=1#contact";
       }
 
       if (formError) {
