@@ -120,7 +120,7 @@ document.addEventListener("DOMContentLoaded", function () {
         _template: "table"
       };
 
-      fetch("https://formsubmit.co/ajax/info@nova-websolutions.com", {
+      fetch("https://formsubmit.co/ajax/kadampan@nova-websolutions.com", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
