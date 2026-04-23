@@ -26,6 +26,7 @@ if ($name === '' || $email === false || $message === '') {
 }
 
 $to = 'kadampan@nova-websolutions.com';
+$fromAddress = 'kadampan@nova-websolutions.com';
 $subject = 'New consultation request - Nova Web Solutions';
 
 $bodyLines = [
@@ -44,15 +45,35 @@ $body = implode(PHP_EOL, $bodyLines);
 $headers = [];
 $headers[] = 'MIME-Version: 1.0';
 $headers[] = 'Content-Type: text/plain; charset=UTF-8';
-$headers[] = 'From: Nova Web Solutions <no-reply@nova-websolutions.com>';
+$headers[] = 'From: Nova Web Solutions <' . $fromAddress . '>';
 $headers[] = 'Reply-To: ' . $email;
 $headers[] = 'X-Mailer: PHP/' . phpversion();
 
-$sent = mail($to, $subject, $body, implode("\r\n", $headers));
+$leadLogDir = __DIR__ . DIRECTORY_SEPARATOR . 'storage';
+$leadLogFile = $leadLogDir . DIRECTORY_SEPARATOR . 'leads.log';
+
+if (!is_dir($leadLogDir)) {
+    @mkdir($leadLogDir, 0755, true);
+}
+
+$logPayload = [
+    'timestamp' => date('c'),
+    'name' => $name,
+    'email' => $email,
+    'message' => $message,
+    'ip' => $_SERVER['REMOTE_ADDR'] ?? 'unknown'
+];
+
+@file_put_contents($leadLogFile, json_encode($logPayload, JSON_UNESCAPED_UNICODE) . PHP_EOL, FILE_APPEND | LOCK_EX);
+
+$sent = mail($to, $subject, $body, implode("\r\n", $headers), '-f' . $fromAddress);
 
 if (!$sent) {
     http_response_code(500);
-    echo json_encode(['success' => false, 'message' => 'Failed to send email']);
+    echo json_encode([
+        'success' => false,
+        'message' => 'Failed to send email. Lead saved to server log.'
+    ]);
     exit;
 }
 
