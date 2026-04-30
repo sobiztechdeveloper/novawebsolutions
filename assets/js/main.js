@@ -81,6 +81,7 @@ document.addEventListener("DOMContentLoaded", function () {
       event.preventDefault();
       let isValid = true;
       const submitButton = contactForm.querySelector("button[type='submit']");
+      const defaultButtonLabel = submitButton ? submitButton.textContent : "";
 
       requiredFields.forEach(function (field) {
         if (!field.input || !field.error) {
@@ -121,6 +122,7 @@ document.addEventListener("DOMContentLoaded", function () {
       if (submitButton) {
         submitButton.disabled = true;
         submitButton.classList.add("opacity-80", "cursor-not-allowed");
+        submitButton.textContent = "Sending...";
       }
 
       fetch("contact.php", {
@@ -164,6 +166,7 @@ document.addEventListener("DOMContentLoaded", function () {
           if (submitButton) {
             submitButton.disabled = false;
             submitButton.classList.remove("opacity-80", "cursor-not-allowed");
+            submitButton.textContent = defaultButtonLabel || "Book My Free Consultation";
           }
         });
     });
