@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800" fill="none">
+  <rect width="1200" height="800" fill="#0F172A"/>
+  <rect x="80" y="80" width="1040" height="640" rx="28" fill="#111827" stroke="#334155" stroke-width="2"/>
+  <rect x="180" y="240" width="840" height="30" rx="10" fill="#1F2937"/>
+  <rect x="180" y="300" width="760" height="24" rx="8" fill="#1F2937"/>
+  <rect x="180" y="344" width="520" height="24" rx="8" fill="#1F2937"/>
+  <text x="180" y="190" fill="#E2E8F0" font-family="Inter, Arial, sans-serif" font-size="44" font-weight="700">Project Preview</text>
+  <text x="180" y="410" fill="#94A3B8" font-family="Inter, Arial, sans-serif" font-size="26">Image unavailable - fallback loaded successfully.</text>
+</svg>

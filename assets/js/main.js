@@ -80,6 +80,7 @@ document.addEventListener("DOMContentLoaded", function () {
     contactForm.addEventListener("submit", function (event) {
       event.preventDefault();
       let isValid = true;
+      const submitButton = contactForm.querySelector("button[type='submit']");
 
       requiredFields.forEach(function (field) {
         if (!field.input || !field.error) {
@@ -115,6 +116,13 @@ document.addEventListener("DOMContentLoaded", function () {
       formData.append("name", document.getElementById("name") ? document.getElementById("name").value.trim() : "");
       formData.append("email", document.getElementById("email") ? document.getElementById("email").value.trim() : "");
       formData.append("message", document.getElementById("message") ? document.getElementById("message").value.trim() : "");
+      formData.append("website", document.getElementById("website") ? document.getElementById("website").value.trim() : "");
+
+      if (submitButton) {
+        submitButton.disabled = true;
+        submitButton.classList.add("opacity-80", "cursor-not-allowed");
+      }
+
       fetch("contact.php", {
         method: "POST",
         headers: {
@@ -150,6 +158,12 @@ document.addEventListener("DOMContentLoaded", function () {
           }
           if (formError) {
             formError.classList.remove("hidden");
+          }
+        })
+        .finally(function () {
+          if (submitButton) {
+            submitButton.disabled = false;
+            submitButton.classList.remove("opacity-80", "cursor-not-allowed");
           }
         });
     });
