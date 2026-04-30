@@ -141,14 +141,73 @@ try {
     $mail->addReplyTo($email, $name);
     $mail->Subject = 'New consultation request - Nova Web Solutions';
 
-    $safeMessage = str_replace(["\r\n", "\r"], "\n", $message);
-    $mail->Body = "You received a new consultation request from the website form.\n\n"
+    $safeName = htmlspecialchars($name, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+    $safeEmail = htmlspecialchars($email, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+    $safeIp = htmlspecialchars($clientIp, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+    $submittedAt = date('Y-m-d H:i:s');
+    $safeSubmittedAt = htmlspecialchars($submittedAt, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+    $safeMessage = htmlspecialchars(str_replace(["\r\n", "\r"], "\n", $message), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+    $formattedMessage = nl2br($safeMessage, false);
+
+    $mail->isHTML(true);
+    $mail->Body = '
+      <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background:#f1f5f9;padding:24px 0;font-family:Arial,Helvetica,sans-serif;color:#0f172a;">
+        <tr>
+          <td align="center">
+            <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="680" style="max-width:680px;width:100%;background:#ffffff;border:1px solid #e2e8f0;border-radius:12px;overflow:hidden;">
+              <tr>
+                <td style="background:#0f172a;padding:20px 24px;">
+                  <h2 style="margin:0;font-size:20px;line-height:1.3;color:#ffffff;">New Consultation Request</h2>
+                  <p style="margin:6px 0 0;font-size:13px;line-height:1.5;color:#cbd5e1;">Submitted from the Nova Web Solutions website form</p>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:24px;">
+                  <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="border-collapse:collapse;">
+                    <tr>
+                      <td style="padding:10px 0;border-bottom:1px solid #e2e8f0;width:180px;font-size:13px;color:#475569;"><strong>Name</strong></td>
+                      <td style="padding:10px 0;border-bottom:1px solid #e2e8f0;font-size:14px;color:#0f172a;">' . $safeName . '</td>
+                    </tr>
+                    <tr>
+                      <td style="padding:10px 0;border-bottom:1px solid #e2e8f0;width:180px;font-size:13px;color:#475569;"><strong>Email</strong></td>
+                      <td style="padding:10px 0;border-bottom:1px solid #e2e8f0;font-size:14px;color:#0f172a;">' . $safeEmail . '</td>
+                    </tr>
+                    <tr>
+                      <td style="padding:10px 0;border-bottom:1px solid #e2e8f0;width:180px;font-size:13px;color:#475569;"><strong>IP Address</strong></td>
+                      <td style="padding:10px 0;border-bottom:1px solid #e2e8f0;font-size:14px;color:#0f172a;">' . $safeIp . '</td>
+                    </tr>
+                    <tr>
+                      <td style="padding:10px 0;border-bottom:1px solid #e2e8f0;width:180px;font-size:13px;color:#475569;"><strong>Submitted Date</strong></td>
+                      <td style="padding:10px 0;border-bottom:1px solid #e2e8f0;font-size:14px;color:#0f172a;">' . $safeSubmittedAt . '</td>
+                    </tr>
+                  </table>
+                  <div style="margin-top:20px;">
+                    <p style="margin:0 0 8px;font-size:13px;color:#475569;"><strong>Message</strong></p>
+                    <div style="padding:14px;border:1px solid #e2e8f0;border-radius:8px;background:#f8fafc;font-size:14px;line-height:1.6;color:#0f172a;">' . $formattedMessage . '</div>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:16px 24px;background:#f8fafc;border-top:1px solid #e2e8f0;">
+                  <p style="margin:0;font-size:12px;line-height:1.6;color:#64748b;">
+                    Nova Web Solutions (PVT) LTD<br>
+                    <a href="https://nova-websolutions.com" style="color:#0ea5e9;text-decoration:none;">https://nova-websolutions.com</a>
+                  </p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>';
+
+    $mail->AltBody = "New consultation request from website form\n\n"
         . "Name: {$name}\n"
         . "Email: {$email}\n"
-        . "IP: {$clientIp}\n"
-        . "Submitted on: " . date('Y-m-d H:i:s') . "\n\n"
-        . "Message:\n{$safeMessage}\n";
-    $mail->AltBody = $mail->Body;
+        . "IP Address: {$clientIp}\n"
+        . "Submitted Date: {$submittedAt}\n\n"
+        . "Message:\n" . str_replace(["\r\n", "\r"], "\n", $message) . "\n\n"
+        . "Nova Web Solutions (PVT) LTD\n"
+        . "https://nova-websolutions.com";
 
     $mail->send();
     respond(200, ['success' => true, 'message' => 'Email sent successfully']);
